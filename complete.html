@@ -1,0 +1,23 @@
+<script>
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+if (!token) {
+  document.body.innerText = "Invalid access";
+} else {
+  fetch("/api/issue", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ad_token: token })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (!d.success) {
+      document.body.innerText = "Failed to issue key";
+      return;
+    }
+    document.body.innerHTML =
+      "<h2>Your License Key</h2><pre>" + d.license_key + "</pre>";
+  });
+}
+</script>
