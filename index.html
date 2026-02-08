@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Luna Executor – Free Access</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #0f1220;
+    color: #eaeaf0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .card {
+    background: #15182e;
+    border-radius: 14px;
+    padding: 40px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #cfcfe6;
+  }
+
+  button {
+    margin-top: 25px;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #6a5cff, #4d7cff);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(90,100,255,0.4);
+  }
+
+  .meta {
+    margin-top: 18px;
+    font-size: 12px;
+    color: #9a9ab5;
+  }
+
+  .links {
+    margin-top: 12px;
+  }
+
+  .links a {
+    color: #9a9ab5;
+    font-size: 12px;
+    margin: 0 6px;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>Luna Executor</h1>
+    <p>
+      Activate free access to Luna Executor.<br>
+      To prevent abuse and automated usage,
+      a one-time verification is required.
+    </p>
+
+    <button onclick="startVerification()">
+      Continue
+    </button>
+
+    <div class="meta">
+      No payment required · Takes less than 1 minute
+    </div>
+
+    <div class="links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Support</a>
+    </div>
+  </div>
+
+<script>
+function startVerification() {
+  // 약간의 딜레이 → 신뢰도 ↑
+  document.querySelector("button").innerText = "Redirecting...";
+  setTimeout(() => {
+    window.location.href =
+      "https://lootdest.org/YOUR_AD_LINK";
+  }, 800);
+}
+</script>
+</body>
+</html>
