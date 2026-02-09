@@ -1,51 +1,26 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Luna Executor - Key</title>
-<style>
-body {
-  background:#0f1220;
-  color:white;
-  font-family:sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.box {
-  background:#15182e;
-  padding:40px;
-  border-radius:12px;
-  width:420px;
-  text-align:center;
-}
-.key {
-  margin-top:20px;
-  padding:15px;
-  background:#0f1220;
-  border-radius:8px;
-  font-family:monospace;
-}
-</style>
+  <meta charset="UTF-8" />
+  <title>Your Luna Key</title>
 </head>
 <body>
-<div class="box">
-  <h2>Your License Key</h2>
-  <p>Please copy and paste it into Luna Executor</p>
-  <div id="key" class="key">Generating...</div>
-</div>
+
+<h2>Generating your key...</h2>
+<pre id="result"></pre>
 
 <script>
-fetch("/api/issue", { method: "POST" })
-  .then(res => res.json())
+fetch("/api/issue")
+  .then(r => r.json())
   .then(data => {
-    if (!data.success) {
-      document.getElementById("key").innerText = "Failed to generate key";
-      return;
+    if (data.success) {
+      document.getElementById("result").innerText = data.key;
+    } else {
+      document.getElementById("result").innerText =
+        data.error || "Failed to generate key";
     }
-    document.getElementById("key").innerText = data.license_key;
   });
 </script>
+
 </body>
 </html>
