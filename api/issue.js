@@ -1,51 +1,58 @@
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 export default async function handler(req, res) {
-  try {
-    const params = new URLSearchParams({
-      sellerkey: process.env.KEYAUTH_SELLER_KEY,
-      type: "license",
-      amount: "1",
-      level: "1"
-    });
+  const ip =
+    (req.headers["x-forwarded-for"] || "")
+      .split(",")[0]
+      .trim() ||
+    req.socket.remoteAddress;
 
-    const response = await fetch(
-      "https://keyauth.cc/api/seller/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: params.toString()
-      }
-    );
+  // 1️⃣ 오늘 이미 받은 적 있는지 확인
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const text = await response.text(); // ⭐ 중요
+  const { data: already } = await supabase
+    .from("license_pool")
+    .select("id")
+    .eq("ip", ip)
+    .gte("used_at", today.toISOString())
+    .limit(1);
 
-    // JSON인지 먼저 확인
-    if (!text.trim().startsWith("{")) {
-      return res.status(500).json({
-        error: "KeyAuth returned non-JSON",
-        raw: text.slice(0, 200)
-      });
-    }
-
-    const data = JSON.parse(text);
-
-    if (!data.success) {
-      return res.status(500).json({
-        error: "KeyAuth failed",
-        message: data.message || data
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      key: data.key
-    });
-
-  } catch (err) {
-    return res.status(500).json({
-      error: "Server error",
-      message: err.message
+  if (already && already.length > 0) {
+    return res.json({
+      error: "You can only generate one key per day"
     });
   }
+
+  // 2️⃣ 사용 안 된 키 하나 가져오기
+  const { data, error } = await supabase
+    .from("license_pool")
+    .select("*")
+    .eq("used", false)
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    return res.json({ error: "Out of stock" });
+  }
+
+  // 3️⃣ 키 사용 처리
+  await supabase
+    .from("license_pool")
+    .update({
+      used: true,
+      used_at: new Date(),
+      ip
+    })
+    .eq("id", data.id);
+
+  return res.json({
+    success: true,
+    key: data.key
+  });
 }
