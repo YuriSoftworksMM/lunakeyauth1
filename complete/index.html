@@ -61,11 +61,11 @@
 </div>
 
 <script>
-if (!document.referrer.includes("lootdest")) {
-  document.body.innerHTML =
-    "<div class='card'><h2 class='error'>Access denied</h2></div>";
-  throw new Error("Blocked");
-}
+//if (!document.referrer.includes("lootdest")) {
+  //document.body.innerHTML =
+    //"<div class='card'><h2 class='error'>Access denied</h2></div>";
+  //throw new Error("Blocked");
+//}
 
 fetch("/api/issue")
   .then(r => r.json())
