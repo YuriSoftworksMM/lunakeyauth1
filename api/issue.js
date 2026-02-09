@@ -12,7 +12,7 @@ export default async function handler(req, res) {
       .trim() ||
     req.socket.remoteAddress;
 
-  // 1️⃣ 오늘 이미 받은 적 있는지 확인
+  // 1️⃣ 하루 1회 제한
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -38,7 +38,9 @@ export default async function handler(req, res) {
     .single();
 
   if (error || !data) {
-    return res.json({ error: "Out of stock" });
+    return res.json({
+      error: "Keys are out of stock"
+    });
   }
 
   // 3️⃣ 키 사용 처리
@@ -51,6 +53,7 @@ export default async function handler(req, res) {
     })
     .eq("id", data.id);
 
+  // 4️⃣ 키 반환
   return res.json({
     success: true,
     key: data.key
