@@ -1,134 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<title>Luna Executor – Access Activated</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<meta charset="utf-8">
+<title>Luna Executor - Key</title>
 <style>
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #0f1220;
-    color: #eaeaf0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-
-  .card {
-    background: #15182e;
-    border-radius: 14px;
-    padding: 40px;
-    max-width: 460px;
-    width: 90%;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    text-align: center;
-  }
-
-  h1 {
-    font-size: 24px;
-    margin-bottom: 10px;
-  }
-
-  p {
-    font-size: 14px;
-    color: #cfcfe6;
-    line-height: 1.6;
-  }
-
-  .keybox {
-    margin-top: 20px;
-    background: #0f1220;
-    border-radius: 10px;
-    padding: 14px;
-    font-family: monospace;
-    font-size: 15px;
-    user-select: all;
-    display: none;
-  }
-
-  button {
-    margin-top: 22px;
-    padding: 12px 18px;
-    font-size: 14px;
-    border-radius: 8px;
-    border: none;
-    background: linear-gradient(135deg, #6a5cff, #4d7cff);
-    color: white;
-    cursor: pointer;
-  }
-
-  button:hover {
-    opacity: 0.9;
-  }
-
-  .status {
-    margin-top: 16px;
-    font-size: 13px;
-    color: #9a9ab5;
-  }
+body {
+  background:#0f1220;
+  color:white;
+  font-family:sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.box {
+  background:#15182e;
+  padding:40px;
+  border-radius:12px;
+  width:420px;
+  text-align:center;
+}
+.key {
+  margin-top:20px;
+  padding:15px;
+  background:#0f1220;
+  border-radius:8px;
+  font-family:monospace;
+}
 </style>
 </head>
-
 <body>
-  <div class="card">
-    <h1>Access Activated</h1>
-    <p>
-      Verification completed successfully.<br>
-      Your license key is being generated.
-    </p>
-
-    <div id="key" class="keybox"></div>
-
-    <button id="copyBtn" onclick="copyKey()" style="display:none">
-      Copy License Key
-    </button>
-
-    <div id="status" class="status">
-      Please wait…
-    </div>
-  </div>
+<div class="box">
+  <h2>Your License Key</h2>
+  <p>Please copy and paste it into Luna Executor</p>
+  <div id="key" class="key">Generating...</div>
+</div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
-
-const statusEl = document.getElementById("status");
-const keyEl = document.getElementById("key");
-const copyBtn = document.getElementById("copyBtn");
-
-if (!token) {
-  statusEl.innerText = "Invalid or missing verification token.";
-} else {
-  fetch("/api/issue", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ad_token: token })
-  })
-  .then(r => r.json())
-  .then(d => {
-    if (!d.success) {
-      statusEl.innerText = "Failed to generate license. Please contact support.";
+fetch("/api/issue", { method: "POST" })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.success) {
+      document.getElementById("key").innerText = "Failed to generate key";
       return;
     }
-
-    keyEl.innerText = d.license_key;
-    keyEl.style.display = "block";
-    copyBtn.style.display = "inline-block";
-
-    statusEl.innerText = "Your license key is ready.";
-  })
-  .catch(() => {
-    statusEl.innerText = "Network error. Please refresh the page.";
+    document.getElementById("key").innerText = data.license_key;
   });
-}
-
-function copyKey() {
-  navigator.clipboard.writeText(keyEl.innerText);
-  copyBtn.innerText = "Copied!";
-}
 </script>
 </body>
 </html>
