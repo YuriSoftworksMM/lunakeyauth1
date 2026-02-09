@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Luna Key</title>
+</head>
+<body>
+
+<h2>Generating your key...</h2>
+<pre id="result"></pre>
+
+<script>
+fetch("/api/issue")
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById("result").innerText = data.key;
+    } else {
+      document.getElementById("result").innerText =
+        data.error || "Failed to generate key";
+    }
+  });
+</script>
+
+</body>
+</html>
