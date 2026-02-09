@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     },
     body: new URLSearchParams({
       type: "license",
-      days: "1", // 키 유효기간 (1일 예시)
+      days: "1",
       amount: "1",
       level: "1",
 
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
   const data = await response.json();
 
   if (!data.success) {
-    return res.json({ success: false, message: data.message });
+    return res.json({ success: false });
   }
 
   res.json({
