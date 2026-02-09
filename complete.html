@@ -6,19 +6,29 @@
 </head>
 <body>
 
-<h2>Generating your key...</h2>
+<h2 id="status">Checking...</h2>
 <pre id="result"></pre>
 
 <script>
+/* 광고 우회 1차 차단 */
+if (!document.referrer.includes("lootdest")) {
+  document.body.innerText = "Access denied.";
+  throw new Error("Blocked");
+}
+
 fetch("/api/issue")
   .then(r => r.json())
   .then(data => {
     if (data.success) {
+      document.getElementById("status").innerText = "Your Key:";
       document.getElementById("result").innerText = data.key;
     } else {
-      document.getElementById("result").innerText =
-        data.error || "Failed to generate key";
+      document.getElementById("status").innerText = "Error";
+      document.getElementById("result").innerText = data.error;
     }
+  })
+  .catch(() => {
+    document.body.innerText = "Server error";
   });
 </script>
 
