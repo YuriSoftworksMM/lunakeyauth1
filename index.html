@@ -2,31 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Luna Executor - Get Key</title>
+  <title>Luna Executor – License Key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      background: #0e0e11;
-      color: white;
-      font-family: Arial;
+      margin: 0;
+      background: #0f1115;
+      font-family: Inter, Arial, sans-serif;
+      color: #eaeaea;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
     }
+
+    .card {
+      background: #161a20;
+      padding: 40px;
+      border-radius: 14px;
+      width: 380px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #9aa4b2;
+      margin-bottom: 24px;
+    }
+
+    ul {
+      text-align: left;
+      font-size: 13px;
+      color: #b5bcc8;
+      margin-bottom: 28px;
+      padding-left: 18px;
+    }
+
     button {
-      padding: 16px 40px;
-      font-size: 20px;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      background: #4f7cff;
+      border: none;
+      border-radius: 10px;
+      color: white;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #3f6be0;
+    }
+
+    .footer {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #6b7280;
     }
   </style>
 </head>
 <body>
 
-<button onclick="start()">Get Key</button>
+<div class="card">
+  <h1>Luna Executor</h1>
+  <p>Generate a free license key</p>
+
+  <ul>
+    <li>One key per day</li>
+    <li>KeyAuth protected</li>
+    <li>Instant activation</li>
+  </ul>
+
+  <button onclick="start()">Get License Key</button>
+
+  <div class="footer">
+    You will be asked to complete a short verification
+  </div>
+</div>
 
 <script>
 function start() {
-  // lootdest 광고 링크
   window.location.href =
     "https://loot-link.com/s?E1v8r1rU";
 }
