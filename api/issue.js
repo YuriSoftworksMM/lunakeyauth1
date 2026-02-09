@@ -1,33 +1,40 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ success: false });
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const response = await fetch("https://keyauth.win/api/1.2/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: new URLSearchParams({
-      type: "license",
-      days: "1",
-      amount: "1",
-      level: "1",
+  try {
+    const response = await fetch("https://keyauth.win/api/seller/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        type: "addkey",
+        sellerkey: process.env.KEYAUTH_SELLER_KEY,
+        expiry: "1", // 1 day
+        mask: "LUNA-****-****"
+      })
+    });
 
-      ownerid: process.env.KEYAUTH_OWNERID,
-      appname: process.env.KEYAUTH_APPNAME,
-      secret: process.env.KEYAUTH_SECRET
-    })
-  });
+    const data = await response.json();
 
-  const data = await response.json();
+    if (!data.success) {
+      return res.status(500).json({
+        error: "KeyAuth failed",
+        message: data.message
+      });
+    }
 
-  if (!data.success) {
-    return res.json({ success: false });
+    res.status(200).json({
+      success: true,
+      key: data.key
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      error: "Server error",
+      message: err.message
+    });
   }
-
-  res.json({
-    success: true,
-    license_key: data.license
-  });
 }
