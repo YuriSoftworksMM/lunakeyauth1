@@ -1,61 +1,76 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY // ⭐ anon 아님
 );
 
 export default async function handler(req, res) {
-  const ip =
-    (req.headers["x-forwarded-for"] || "")
-      .split(",")[0]
-      .trim() ||
-    req.socket.remoteAddress;
+  try {
+    const ip =
+      req.headers['x-forwarded-for']?.split(',')[0] ||
+      req.socket.remoteAddress;
 
-  // 1️⃣ 하루 1회 제한
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    if (!ip) {
+      return res.status(400).json({ error: 'IP not found' });
+    }
 
-  const { data: already } = await supabase
-    .from("license_pool")
-    .select("id")
-    .eq("ip", ip)
-    .gte("used_at", today.toISOString())
-    .limit(1);
+    // 1️⃣ 24시간 제한
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-  if (already && already.length > 0) {
+    const { data: recent } = await supabase
+      .from('claims')
+      .select('id')
+      .eq('ip', ip)
+      .gte('claimed_at', since)
+      .limit(1);
+
+    if (recent.length > 0) {
+      return res.status(429).json({
+        error: 'You can only get one key per day'
+      });
+    }
+
+    // 2️⃣ 사용 안 된 키 하나 가져오기
+    const { data: keys } = await supabase
+      .from('licenses')
+      .select('*')
+      .eq('used', false)
+      .limit(1);
+
+    if (!keys || keys.length === 0) {
+      return res.status(503).json({
+        error: 'Out of stock'
+      });
+    }
+
+    const key = keys[0];
+
+    // 3️⃣ 키 사용 처리
+    await supabase
+      .from('licenses')
+      .update({
+        used: true,
+        used_at: new Date(),
+        used_ip: ip
+      })
+      .eq('id', key.id);
+
+    // 4️⃣ 지급 기록
+    await supabase
+      .from('claims')
+      .insert({ ip });
+
+    // 5️⃣ 반환
     return res.json({
-      error: "You can only generate one key per day"
+      success: true,
+      key: key.license_key
+    });
+
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({
+      error: 'Server error'
     });
   }
-
-  // 2️⃣ 사용 안 된 키 하나 가져오기
-  const { data, error } = await supabase
-    .from("license_pool")
-    .select("*")
-    .eq("used", false)
-    .limit(1)
-    .single();
-
-  if (error || !data) {
-    return res.json({
-      error: "Keys are out of stock"
-    });
-  }
-
-  // 3️⃣ 키 사용 처리
-  await supabase
-    .from("license_pool")
-    .update({
-      used: true,
-      used_at: new Date(),
-      ip
-    })
-    .eq("id", data.id);
-
-  // 4️⃣ 키 반환
-  return res.json({
-    success: true,
-    key: data.key
-  });
 }
