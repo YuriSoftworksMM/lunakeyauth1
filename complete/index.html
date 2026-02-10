@@ -31,26 +31,18 @@ body {
 </head>
 <body>
 
-<div class="card">
-  <h2>Your License Key</h2>
-  <p>Copy and paste into Luna Executor</p>
-  <div class="key" id="key">Generating...</div>
-</div>
+<div id="result">Processing...</div>
 
 <script>
-fetch('/api/issue')
+fetch("/api/issue")
   .then(r => r.json())
   .then(d => {
-    if (d.key) {
-      document.getElementById('key').innerText = d.key;
-    } else {
-      document.getElementById('key').innerText = d.error;
-    }
-  })
-  .catch(() => {
-    document.getElementById('key').innerText = 'Server error';
+    document.getElementById("result").innerText =
+      d.key || d.error;
   });
 </script>
 
+
 </body>
 </html>
+
