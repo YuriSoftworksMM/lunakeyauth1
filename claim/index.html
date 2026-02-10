@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Luna Key Claim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: #161616;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0,0,0,.6);
+    }
+
+    .key {
+      background: #0a0a0a;
+      padding: 12px;
+      margin-top: 15px;
+      border-radius: 6px;
+      font-family: monospace;
+      word-break: break-all;
+      cursor: pointer;
+    }
+
+    .error { color: #ff6b6b; }
+    .success { color: #6bff95; }
+    .small { font-size: 12px; opacity: .7; }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>🔑 License Key</h2>
+  <div id="result">Processing...</div>
+  <div class="small">Click the key to copy</div>
+</div>
+
+<script>
+fetch("/api/issue")
+  .then(r => r.json())
+  .then(d => {
+    const el = document.getElementById("result");
+
+    if (d.key) {
+      el.className = "key success";
+      el.innerText = d.key;
+
+      el.onclick = () => {
+        navigator.clipboard.writeText(d.key);
+        alert("Key copied!");
+      };
+    } else {
+      el.className = "error";
+      el.innerText = d.error || "Unknown error";
+    }
+  })
+  .catch(() => {
+    document.getElementById("result").innerText =
+      "Server error";
+  });
+</script>
+
+</body>
+</html>
