@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Luna Admin</title>
+  <style>
+    body { background:#111; color:#eee; font-family:sans-serif; }
+    input, button { padding:6px; }
+    table { width:100%; margin-top:20px; border-collapse:collapse; }
+    td, th { border-bottom:1px solid #333; padding:8px; }
+    .used { color:#f66; }
+    .free { color:#6f6; }
+  </style>
+</head>
+<body>
+
+<h2>🔐 License Pool Manager</h2>
+
+<input id="password" placeholder="Admin password" type="password">
+<button onclick="loadKeys()">Login</button>
+
+<hr>
+
+<input id="newKey" placeholder="NEW KeyAuth key">
+<button onclick="addKey()">Add Key</button>
+
+<table id="table"></table>
+
+<script>
+let token = "";
+
+function api(action, body) {
+  return fetch(`/api/admin?action=${action}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify(body)
+  }).then(r => r.json());
+}
+
+function loadKeys() {
+  token = document.getElementById("password").value;
+
+  fetch("/api/admin?action=list", {
+    headers: { "Authorization": "Bearer " + token }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const t = document.getElementById("table");
+    t.innerHTML = `
+      <tr>
+        <th>Key</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    `;
+    data.forEach(k => {
+      t.innerHTML += `
+        <tr>
+          <td>${k.key}</td>
+          <td class="${k.used ? "used" : "free"}">
+            ${k.used ? "USED" : "FREE"}
+          </td>
+          <td>
+            <button onclick="del('${k.id}')">Delete</button>
+          </td>
+        </tr>
+      `;
+    });
+  });
+}
+
+function addKey() {
+  api("add", { key: newKey.value }).then(loadKeys);
+}
+
+function del(id) {
+  api("delete", { id }).then(loadKeys);
+}
+</script>
+
+</body>
+</html>
